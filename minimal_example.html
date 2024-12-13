@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal External Integration Example</title>
+</head>
+
+<body>
+    <div id="activity-container">
+        <p>Solve for x: 2x + 3 = 7</p>
+        <label for="answer">Your answer for x:</label>
+        <input type="text" id="answer" name="answer">
+        <button id="answer-btn" onclick="checkAnswer()">Answer</button>
+        <p id="feedback"></p>
+        <button id="submit-btn" onclick="submit()" style="display:none">Submit</button>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const url_launch_token = urlParams.get('launch_token'); // Single-use launch token
+        const url_pid = urlParams.get('anonymous_id') // Participant ID
+        
+        // Variable for the student's score
+        let score = 0;
+
+        // Container for responses
+        let responses = [];
+
+        function checkAnswer() {
+            // Get timestamp
+            var timestamp = Date.now();
+
+            // Correct answer
+            const correctAnswer = 2; // (2x + 3 = 7, x = 2)
+
+            // Get the user's answer from the input field
+            const userAnswer = document.getElementById("answer").value;
+
+            // Evaluate answer correctness
+            var correctness = parseFloat(userAnswer) === correctAnswer;
+            if (correctness) score += 1; 
+
+            // Push the response
+            responses.push({
+                pid: url_pid,
+                question: "2x + 3 = 7",
+                correctAnswer: correctAnswer,
+                response: userAnswer,
+                correctness: correctness,
+                datetime: timestamp
+            });
+
+            // Display feedback and enable submit button
+            const feedback = document.getElementById("feedback");
+            feedback.textContent = JSON.stringify(responses); // save this 
+            document.getElementById("answer-btn").disabled = true;
+            document.getElementById("submit-btn").style.display = 'inline-block';
+        }
+
+        function submit() {
+            window.location.href = `https://app.terracotta.education/integrations?launch_token=${url_launch_token}&score=${score}`
+        }
+
+    </script>
+
+</body>
