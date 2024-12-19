@@ -21,8 +21,13 @@
         // Get URL parameters
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const url_launch_token = urlParams.get('launch_token'); // Single-use launch token
+        let url_launch_token = urlParams.get('launch_token'); // Single-use launch token
         const url_pid = urlParams.get('anonymous_id') // Participant ID
+
+        // If there is no launch_token provided, assume that this is a preview
+        if (url_launch_token == "" || url_launch_token == null || url_launch_token == undefined) {
+            url_launch_token = "0000000-0000-4000-a000-000000000000"; // reserved preview token
+        }
         
         // Variable for the student's score
         let score = 0;
